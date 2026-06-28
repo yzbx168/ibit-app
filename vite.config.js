@@ -104,7 +104,9 @@ export default ({ mode }) =>
       alias: {
         // 'vue-i18n': 'vue-i18n/dist/vue-i18n.cjs.js',
         'vue-i18n': 'vue-i18n/dist/vue-i18n.esm-bundler.js',
-        '@': fileURLToPath(new URL('./src', import.meta.url))
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
+        // 映射 /resource/ 到 public/resource/
+        '/resource': fileURLToPath(new URL('./public/resource', import.meta.url))
       }
     },
     json: {
