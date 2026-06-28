@@ -149,6 +149,10 @@ export default ({ mode }) =>
     rollupOptions: {
       // Rollup 不会将入口模块中的任何导出内容添加到相应的 chunk 中
       preserveEntrySignatures: false,
+      // 排除 public 目录资源
+      external: [
+        /^\/resource\//
+      ],
       output: {
         // 代码压缩
         minify: true,
