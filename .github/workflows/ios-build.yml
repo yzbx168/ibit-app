@@ -27,19 +27,13 @@ jobs:
         cache-dependency-path: package-lock.json
     
     - name: Install dependencies
-      run: |
-        cd 682vue_h5
-        npm ci
+      run: npm ci
     
     - name: Build web
-      run: |
-        cd 682vue_h5
-        npm run build
+      run: npm run build
     
     - name: Sync iOS
-      run: |
-        cd 682vue_h5
-        npx cap sync ios
+      run: npx cap sync ios
     
     - name: Install Certificate
       run: |
@@ -63,7 +57,7 @@ jobs:
     
     - name: Build IPA
       run: |
-        cd 682vue_h5/ios/App
+        cd ios/App
         
         # 构建 Archive
         xcodebuild -workspace App.xcworkspace \
@@ -75,7 +69,7 @@ jobs:
     
     - name: Export IPA
       run: |
-        cd 682vue_h5/ios/App
+        cd ios/App
         
         # 导出 IPA
         xcodebuild -exportArchive \
@@ -87,7 +81,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: IBIT-iOS-${{ github.event.inputs.version }}
-        path: 682vue_h5/ios/App/build/App.ipa
+        path: ios/App/build/App.ipa
         retention-days: 7
     
     - name: Cleanup
