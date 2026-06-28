@@ -124,7 +124,7 @@ const featureList = [
 
       <!-- 手机展示图 -->
       <div class="phone-showcase">
-        <img src="/resource/images/light/phone-mockup.png" alt="phone mockup" class="phone-image" />
+        <img src="@/assets/images/light/phone-mockup.png" alt="phone mockup" class="phone-image" />
       </div>
 
       <!-- 下载按钮区域 -->
