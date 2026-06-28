@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>method</key>
+    <string>ad-hoc</string>
+    <key>teamID</key>
+    <string>VVTB2D8TRD</string>
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>VVTB2D8TRD.app.eggplant1907.jet4469</key>
+        <string>Eggplant1907Jet4469 0cdde4baebdaaf930739514fc329523e</string>
+    </dict>
+    <key>signingCertificate</key>
+    <string>iPhone Distribution</string>
+    <key>signingStyle</key>
+    <string>manual</string>
+    <key>uploadSymbols</key>
+    <true/>
+    <key>compileBitcode</key>
+    <false/>
+    <key>uploadBitcode</key>
+    <false/>
+    <key>stripSwiftSymbols</key>
+    <true/>
+</dict>
+</plist>

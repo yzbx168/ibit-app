@@ -1,0 +1,20 @@
+{
+  "appId": "com.ibitasia.app",
+  "appName": "IBIT",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#1A1A1A",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "dark",
+      "backgroundColor": "#1A1A1A"
+    }
+  }
+}

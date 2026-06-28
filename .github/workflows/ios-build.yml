@@ -1,0 +1,100 @@
+name: iOS Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号 (例如：1.0.0)'
+        required: true
+        default: '1.0.0'
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: package-lock.json
+    
+    - name: Install dependencies
+      run: |
+        cd 682vue_h5
+        npm ci
+    
+    - name: Build web
+      run: |
+        cd 682vue_h5
+        npm run build
+    
+    - name: Sync iOS
+      run: |
+        cd 682vue_h5
+        npx cap sync ios
+    
+    - name: Install Certificate
+      run: |
+        # 创建临时 keychain
+        security create-keychain -p buildkeychain build.keychain
+        security default-keychain -s build.keychain
+        security unlock-keychain -p buildkeychain build.keychain
+        
+        # 导入证书
+        echo "${{ secrets.DISTRIBUTION_CERTIFICATE }}" | base64 -d > /tmp/distribution.p12
+        security import /tmp/distribution.p12 -k build.keychain -P "${{ secrets.CERTIFICATE_PASSWORD }}" -T /usr/bin/codesign
+        security set-key-partition-list -S apple-tool:,apple: -s -k buildkeychain build.keychain
+        
+        # 导入 Provisioning Profile
+        echo "${{ secrets.PROVISIONING_PROFILE }}" | base64 -d > /tmp/profile.mobileprovision
+        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+        cp /tmp/profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+        
+        # 清理
+        rm -f /tmp/distribution.p12 /tmp/profile.mobileprovision
+    
+    - name: Build IPA
+      run: |
+        cd 682vue_h5/ios/App
+        
+        # 构建 Archive
+        xcodebuild -workspace App.xcworkspace \
+          -scheme App \
+          -configuration Release \
+          -destination generic/platform=iOS \
+          -archivePath build/App.xcarchive \
+          archive
+    
+    - name: Export IPA
+      run: |
+        cd 682vue_h5/ios/App
+        
+        # 导出 IPA
+        xcodebuild -exportArchive \
+          -archivePath build/App.xcarchive \
+          -exportPath build \
+          -exportOptionsPlist ExportOptions.plist
+    
+    - name: Upload IPA
+      uses: actions/upload-artifact@v4
+      with:
+        name: IBIT-iOS-${{ github.event.inputs.version }}
+        path: 682vue_h5/ios/App/build/App.ipa
+        retention-days: 7
+    
+    - name: Cleanup
+      run: |
+        security delete-keychain build.keychain || true
+    
+    - name: Notify Success
+      if: success()
+      run: |
+        echo "✅ iOS 打包成功！"
+        echo " IPA 文件已上传到 Actions Artifacts"
+        echo " 文件名：IBIT-iOS-${{ github.event.inputs.version }}"
+        echo "⏰ 保留期限：7 天"

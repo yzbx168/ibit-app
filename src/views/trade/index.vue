@@ -1,0 +1,192 @@
+<!-- 交易页面：秒合约，币币交易，U本位 -->
+<template>
+  <div>
+    <!-- tabs -->
+    <van-sticky>
+      <div class="headerList">
+        <div class="left">
+          <svg-load name="jiantou-z" class="leftImg" @click="_back()"></svg-load>
+        </div>
+        <div class="headerChoose">
+          <van-tabs
+            swipeable
+            shrink
+            :swipe-threshold="2"
+            v-model:active="currentIndex"
+            line-width="20"
+            line-height="2"
+            color="rgb(240, 185, 11)"
+            title-active-color="rgb(240, 185, 11)"
+            title-inactive-color="#5d626d"
+          >
+            <van-tab v-for="(item, index) in headerList" :key="index" :title="item.title">
+            </van-tab>
+          </van-tabs>
+        </div>
+      </div>
+    </van-sticky>
+    <!-- tab -->
+    <component
+      :is="currentComponent"
+      :headerList="headerList"
+    ></component>
+  </div>
+</template>
+
+<script setup>
+import { _t18 } from '@/utils/public'
+import { useMainStore } from '@/store/index'
+const mainStore = useMainStore()
+import { useTradeStore } from '@/store/trade'
+const tradeStore = useTradeStore()
+import { useRoute } from 'vue-router'
+const $route = useRoute()
+import { computed, onMounted } from 'vue'
+import SecondContract from './components/tradeSecondContract.vue'
+import BBTrading from './components/tradeBBTrading.vue'
+import Ustandard from './components/tradeUstandard.vue'
+// tabs - 直接定义所有交易类型，确保都显示
+const headerList = computed(() => {
+  return [
+    { title: _t18('trade_tab3'), componentName: 'BBTrading', currentTab: 'spot' },
+    { title: _t18('trade_tab5'), componentName: 'Ustandard', currentTab: 'contract' },
+    { title: _t18('trade_tab6'), componentName: 'SecondContract', currentTab: 'secondContract' }
+  ]
+})
+const currentIndex = ref(
+  mainStore.tradeFlag - mainStore.isOption < 0 ? 0 : mainStore.tradeFlag - mainStore.isOption
+)
+// 切换组件
+const currentComponent = computed(() => {
+  let temp = ''
+  if (headerList.value[currentIndex.value].componentName == 'SecondContract') {
+    temp = SecondContract
+  }else if (headerList.value[currentIndex.value].componentName == 'BBTrading') {
+    temp = BBTrading
+  }else if (headerList.value[currentIndex.value].componentName == 'Ustandard') {
+    temp = Ustandard
+  }
+  return temp
+})
+watch(
+  currentIndex,
+  (n) => {
+    mainStore.setTradeFlag(n)
+    tradeStore.getCoinList()
+    /* if (headerList.value[n].componentName == 'SecondContract') {
+      let temp={}
+      if ($route.query.symbol) {
+        temp = tradeStore.secondContractCoinList.filter((item, index) => {
+          return item.coin === $route.query.symbol
+        })[0]
+        if (!temp) {
+          temp = tradeStore.secondContractCoinList[0]
+        }
+      } else {
+        temp = tradeStore.secondContractCoinList[0]
+      }
+      coinInfo2.value=temp
+    } else if (headerList.value[currentIndex.value].componentName == 'BBTrading') {
+      let temp={}
+      if ($route.query.symbol) {
+        temp = tradeStore.spotCoinList.filter((item, index) => {
+          return item.coin === $route.query.symbol
+        })[0]
+        if (!temp) {
+          temp = tradeStore.spotCoinList[0]
+        }
+      } else {
+        temp = tradeStore.spotCoinList[0]
+      }
+      coinInfo2.value=temp
+    } else if (headerList.value[currentIndex.value].componentName == 'Ustandard') {
+      let temp={}
+      if ($route.query.symbol) {
+        temp = tradeStore.contractCoinList.filter((item, index) => {
+          return item.coin === $route.query.symbol
+        })[0]
+        if (!temp) {
+          temp = tradeStore.contractCoinList[0]
+        }
+      } else {
+        temp = tradeStore.contractCoinList[0]
+      }
+      coinInfo2.value=temp
+    } */
+  },
+  { immediate: true }
+)
+onMounted(()=>{
+  tradeStore.getCoinList()
+})
+</script>
+
+<style lang="scss" scoped>
+.headerList {
+  height: 60px;
+  border-bottom: 1px solid rgba(64, 105, 231, 0.3);
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, var(--ex-home-list-bgcolor), rgba(64, 105, 231, 0.1));
+  box-shadow: 0 2px 10px rgba(64, 105, 231, 0.2);
+  z-index: 9;
+  padding-left: 15px;
+
+  .left {
+    display: flex;
+    font-size: 16px;
+    font-weight: normal;
+    color: var(--ex-default-font-color);
+
+    .leftImg {
+      width: 16px;
+      height: 12px;
+      margin-right: 15px;
+      filter: drop-shadow(0 0 5px rgba(64, 105, 231, 0.5));
+      transition: all 0.3s ease;
+      &:hover {
+        transform: translateX(-2px);
+        filter: drop-shadow(0 0 8px rgba(64, 105, 231, 0.8));
+      }
+    }
+  }
+
+  .headerChoose {
+    display: flex;
+    padding: 0 15px 0 0;
+    background: transparent;
+
+    :deep(.van-tabs__wrap) {
+      height: 59px;
+    }
+
+    :deep(.van-tabs__nav) {
+      background: transparent;
+    }
+
+    :deep(.van-tab) {
+      flex: none;
+      font-size: 16px;
+      margin-right: 30px;
+      padding: 0;
+      color: var(--ex-home-list-ftcolor) !important;
+      background: transparent;
+      transition: all 0.3s ease;
+      &:hover {
+        color: rgba(240, 185, 11, 0.8) !important;
+      }
+    }
+
+    :deep(.van-tab--active) {
+      font-weight: normal;
+      color: rgb(240, 185, 11) !important;
+      text-shadow: 0 0 8px rgba(240, 185, 11, 0.6);
+    }
+    
+    :deep(.van-tabs__line) {
+      background: linear-gradient(90deg, rgba(240, 185, 11, 0.8), rgba(240, 185, 11, 1)) !important;
+      box-shadow: 0 0 10px rgba(240, 185, 11, 0.8);
+    }
+  }
+}
+</style>

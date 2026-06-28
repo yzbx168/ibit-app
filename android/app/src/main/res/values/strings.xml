@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">IBIT</string>
+    <string name="title_activity_main">IBIT</string>
+    <string name="package_name">com.ibitasia.app</string>
+    <string name="custom_url_scheme">com.ibitasia.app</string>
+</resources>
