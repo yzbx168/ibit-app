@@ -11,6 +11,9 @@ on:
 jobs:
   build-ios:
     runs-on: macos-14
+    env:
+      ACTIONS_RUNNER_NODE_DEBUG: true
+      NODE_VERSION: '24'
     
     steps:
     - name: Checkout code
